@@ -18,6 +18,11 @@ module.exports = router
  * process.env.GOOGLE_CALLBACK = '/your/google/callback'
  */
 
+process.env.GOOGLE_CLIENT_ID =
+  '692586861742-o91imepkbdh79tctcd54kt53vd699k2j.apps.googleusercontent.com'
+process.env.GOOGLE_CLIENT_SECRET = 'hSUv05yVA_V-8rNUHWKThlJC'
+process.env.GOOGLE_CALLBACK = '/auth/google/callback'
+
 if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
   console.log('Google client ID / secret not found. Skipping Google OAuth.')
 } else {

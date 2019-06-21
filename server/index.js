@@ -10,6 +10,17 @@ const sessionStore = new SequelizeStore({db})
 const PORT = process.env.PORT || 8080
 const app = express()
 const socketio = require('socket.io')
+const {Sensor} = require('./db/models/')
+
+const SerialPort = require('serialport')
+const Readline = require('@serialport/parser-readline')
+const port = new SerialPort('/dev/ttyACM0', {baudRate: 9600}, function(err) {
+  if (err) {
+    return console.log('Error: ', err.message)
+  }
+})
+
+const parser = port.pipe(new Readline({delimiter: '\n'}))
 module.exports = app
 
 // This is a global Mocha hook, used for resource cleanup.
@@ -106,6 +117,40 @@ const startListening = () => {
 }
 
 const syncDb = () => db.sync()
+
+port.on('open', () => {
+  console.log('serial port open')
+})
+
+parser.on('data', data => {
+  // console.log(data)
+  let splitData = data.split(',')
+  splitData.pop()
+  // console.log(splitData)
+
+  let serialNum = Number(splitData[0])
+  let temp = Number(splitData[1])
+  temp = Math.round(temp * (9 / 5) + 32)
+  let hum = Number(splitData[2])
+  // storeSensoreData(101,"test", 66,45)
+  console.log(serialNum, temp, hum)
+  storeSensoreData(serialNum, temp, hum)
+})
+
+async function storeSensoreData(serialNumber, temperature, humidity) {
+  try {
+    const sensorData = {
+      serialNumber,
+      temperature,
+      humidity
+    }
+    // console.log(sensorData)
+
+    await Sensor.create(sensorData)
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 async function bootApp() {
   await sessionStore.sync()
