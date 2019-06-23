@@ -10,7 +10,38 @@ router.get('/', async (req, res, next) => {
       // send everything to anyone who asks!
       attributes: ['id', 'email']
     })
-    res.json(users)
+    res.status(200).json(users)
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.put('/:id', async (req, res, next) => {
+  // console.log(process.env.HUMIDITY_LOW_SET_POINT )
+
+  try {
+    const userID = req.user.id
+    const humidityHighPoint = Number(req.body.humidityHighPoint)
+    const humidityLowPoint = Number(req.body.humidityLowPoint)
+
+    await User.update(
+      {
+        humidityHighPoint,
+        humidityLowPoint
+      },
+      {
+        where: {
+          id: userID
+        }
+      }
+    )
+
+    const updateInfo = await User.findByPk(userID)
+
+    process.env.HUMIDITY_LOW_SET_POINT = updateInfo.humidityLowPoint
+    process.env.HUMIDITY_HIGH_SET_POINT = updateInfo.humidityHighPoint
+
+    res.status(201).send('complete')
   } catch (err) {
     next(err)
   }

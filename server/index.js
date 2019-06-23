@@ -11,9 +11,38 @@ const PORT = process.env.PORT || 8080
 const app = express()
 const socketio = require('socket.io')
 const {Sensor} = require('./db/models/')
+const {User} = require('./db/models')
 
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
+
+let SerialPortCom = ''
+
+function delay(t, v) {
+  return new Promise(function(resolve) {
+    setTimeout(resolve.bind(null, v), t)
+  })
+}
+
+async function getComPorts() {
+  const ports = await SerialPort.list()
+  return ports
+}
+
+let availablePorts = getComPorts()
+
+delay(1000).then(
+  availablePorts.then(ports => {
+    // console.log(ports)
+    ports.forEach(port => {
+      if (port.manufacturer === 'Arduino (www.arduino.cc)') {
+        // console.log(port)
+        return port
+      }
+    })
+  })
+)
+
 const port = new SerialPort('/dev/ttyACM0', {baudRate: 9600}, function(err) {
   if (err) {
     return console.log('Error: ', err.message)
@@ -107,6 +136,7 @@ const createApp = () => {
 
 const startListening = () => {
   // start listening (and create a 'server' object representing our server)
+
   const server = app.listen(PORT, () =>
     console.log(`Mixing it up on port ${PORT}`)
   )
@@ -114,35 +144,54 @@ const startListening = () => {
   // set up our socket control center
   const io = socketio(server)
   require('./socket')(io)
+
+  port.on('open', () => {
+    console.log('serial port open')
+  })
+
+  parser.on('data', data => {
+    let splitData = data.split(',')
+    splitData.pop()
+
+    let serialNum = Number(splitData[0])
+    let temp = Number(splitData[1])
+    temp = Math.round(temp * (9 / 5) + 32)
+    let hum = Number(splitData[2])
+    let id = 1
+    let name = 'Sid Nambiar'
+    let status = ''
+    console.log(
+      process.env.HUMIDITY_LOW_SET_POINT,
+      process.env.HUMIDITY_HIGH_SET_POINT
+    )
+    if (hum > Number(process.env.HUMIDITY_HIGH_SET_POINT)) {
+      console.log('Humdity is high!!')
+      status = 'Humdity is high!'
+    } else if (hum < Number(process.env.HUMIDITY_LOW_SET_POINT)) {
+      console.log('Humidity is low')
+      status = 'Humdity is low!'
+    } else {
+      console.log('Humidty is fine')
+      status = 'Humdity is fine!'
+    }
+
+    let dataToSendToClient = [temp, hum, serialNum, status]
+    if (serialNum && temp && hum) {
+      io.emit('temp-hum', dataToSendToClient)
+      storeSensoreData(serialNum, temp, hum, id, name)
+    }
+  })
 }
 
 const syncDb = () => db.sync()
 
-port.on('open', () => {
-  console.log('serial port open')
-})
-
-parser.on('data', data => {
-  // console.log(data)
-  let splitData = data.split(',')
-  splitData.pop()
-  // console.log(splitData)
-
-  let serialNum = Number(splitData[0])
-  let temp = Number(splitData[1])
-  temp = Math.round(temp * (9 / 5) + 32)
-  let hum = Number(splitData[2])
-  // storeSensoreData(101,"test", 66,45)
-  console.log(serialNum, temp, hum)
-  storeSensoreData(serialNum, temp, hum)
-})
-
-async function storeSensoreData(serialNumber, temperature, humidity) {
+async function storeSensoreData(serialNumber, temperature, humidity, userId) {
   try {
     const sensorData = {
       serialNumber,
       temperature,
-      humidity
+      humidity,
+      userId
     }
     // console.log(sensorData)
 

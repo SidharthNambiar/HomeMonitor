@@ -26,6 +26,20 @@ const User = db.define('user', {
   },
   googleId: {
     type: Sequelize.STRING
+  },
+
+  name: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+
+  humidityLowPoint: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0
+  },
+  humidityHighPoint: {
+    type: Sequelize.INTEGER,
+    defaultValue: 0
   }
 })
 

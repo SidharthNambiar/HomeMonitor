@@ -3,15 +3,25 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {logout} from '../store'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
 
 const Navbar = ({handleClick, isLoggedIn}) => (
   <div>
-    <h1>Home Monitor</h1>
-    <nav>
+    {/* <h1>Home Monitor</h1> */}
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="title" color="inherit">
+          Home Monitor
+        </Typography>
+      </Toolbar>
       {isLoggedIn ? (
         <div>
           {/* The navbar will show these links after you log in */}
           <Link to="/home">Home</Link>
+          <Link to="/devices">My Devices</Link>
           <a href="#" onClick={handleClick}>
             Logout
           </a>
@@ -23,7 +33,7 @@ const Navbar = ({handleClick, isLoggedIn}) => (
           <Link to="/signup">Sign Up</Link>
         </div>
       )}
-    </nav>
+    </AppBar>
     <hr />
   </div>
 )

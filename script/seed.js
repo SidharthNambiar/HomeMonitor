@@ -8,8 +8,20 @@ async function seed() {
   console.log('db synced!')
 
   const users = await Promise.all([
-    User.create({email: 'cody@email.com', password: '123'}),
-    User.create({email: 'murphy@email.com', password: '123'})
+    User.create({
+      email: 'cody@email.com',
+      password: '123',
+      name: 'Robin Hood',
+      humidityLowPoint: 10,
+      humidityHighPoint: 45
+    }),
+    User.create({
+      email: 'murphy@email.com',
+      password: '123',
+      name: 'Macintosh Watkins',
+      humidityLowPoint: 10,
+      humidityHighPoint: 45
+    })
   ])
 
   const sensors = await Promise.all([
@@ -19,7 +31,7 @@ async function seed() {
       humidity: 20,
       userId: 1
     }),
-    Sensor.create({serialNumber: 101, temperature: 45, humidity: 8, userId: 1}),
+    Sensor.create({serialNumber: 101, temperature: 45, humidity: 8, userId: 2}),
     Sensor.create({
       serialNumber: 102,
       temperature: 89,
@@ -32,7 +44,12 @@ async function seed() {
       humidity: 32,
       userId: 2
     }),
-    Sensor.create({serialNumber: 104, temperature: 75, humidity: 12, userId: 1})
+    Sensor.create({
+      serialNumber: 104,
+      temperature: 75,
+      humidity: 12,
+      userId: 2
+    })
   ])
 
   console.log(`seeded ${users.length} users`)
