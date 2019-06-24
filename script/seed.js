@@ -13,14 +13,14 @@ async function seed() {
       password: '123',
       name: 'Robin Hood',
       humidityLowPoint: 10,
-      humidityHighPoint: 45
+      humidityHighPoint: 20
     }),
     User.create({
       email: 'murphy@email.com',
       password: '123',
       name: 'Macintosh Watkins',
       humidityLowPoint: 10,
-      humidityHighPoint: 45
+      humidityHighPoint: 20
     })
   ])
 
@@ -29,7 +29,9 @@ async function seed() {
       serialNumber: 100,
       temperature: 75,
       humidity: 20,
-      userId: 1
+      userId: 1,
+      imageUrl:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTg039XAhUWQRGpM-YNYZhLwL2kTDiMaKRbKr4iMwtUMyTt--ud'
     }),
     Sensor.create({serialNumber: 101, temperature: 45, humidity: 8, userId: 2}),
     Sensor.create({

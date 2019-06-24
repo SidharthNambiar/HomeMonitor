@@ -15,6 +15,11 @@ const Sensor = db.define('sensor', {
   humidity: {
     type: Sequelize.INTEGER,
     allowNull: false
+  },
+
+  imageUrl: {
+    type: Sequelize.STRING,
+    defaultValue: 'https://png.pngtree.com/svg/20170424/948583fb9c.svg'
   }
 })
 

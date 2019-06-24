@@ -10,38 +10,48 @@ const sessionStore = new SequelizeStore({db})
 const PORT = process.env.PORT || 8080
 const app = express()
 const socketio = require('socket.io')
-const {Sensor} = require('./db/models/')
-const {User} = require('./db/models')
+const {Sensor, User} = require('./db/models/')
 
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 
-let SerialPortCom = ''
+var nodemailer = require('nodemailer')
+process.env.HUMIDITY_LOW_SET_POINT = 10
+process.env.HUMIDITY_HIGH_SET_POINT = 20
 
-function delay(t, v) {
-  return new Promise(function(resolve) {
-    setTimeout(resolve.bind(null, v), t)
-  })
+// var transporter = nodemailer.createTransport({
+//   host: "smtp.mail.com",
+//   port: 587,
+//   secure: false,
+//   auth: {
+//     user: 'snambiar01@mail.com',
+//     pass: 'reallycool'
+//   }
+// });
+
+var transporter = nodemailer.createTransport({
+  host: 'smtp.mail.com',
+  auth: {
+    user: 'snambiar01@mail.com',
+    pass: 'reallycool'
+  }
+})
+
+// const mailOptions = {
+//   from: '"Home Monitor Alert" <snambiar01@mail.com>', // sender address
+//   to: "snambiar01@mail.com", // list of receivers
+//   subject: "Sensor Triggered", // Subject line
+//   text: "Hello World",
+//   html: "<b>Your sensor was triggered</b>"// plain text body
+// };
+
+var mailOptions = {
+  from: '"Home Alert System" <snambiar01@mail.com>',
+  to: 'snambiar01@mail.com',
+  subject: 'Alarm Triggered',
+  html:
+    '<p>Your sensor has triggered an alarm. Please take action, to avoid receving these emails.</p>'
 }
-
-async function getComPorts() {
-  const ports = await SerialPort.list()
-  return ports
-}
-
-let availablePorts = getComPorts()
-
-delay(1000).then(
-  availablePorts.then(ports => {
-    // console.log(ports)
-    ports.forEach(port => {
-      if (port.manufacturer === 'Arduino (www.arduino.cc)') {
-        // console.log(port)
-        return port
-      }
-    })
-  })
-)
 
 const port = new SerialPort('/dev/ttyACM0', {baudRate: 9600}, function(err) {
   if (err) {
@@ -160,6 +170,7 @@ const startListening = () => {
     let id = 1
     let name = 'Sid Nambiar'
     let status = ''
+
     console.log(
       process.env.HUMIDITY_LOW_SET_POINT,
       process.env.HUMIDITY_HIGH_SET_POINT
@@ -167,6 +178,11 @@ const startListening = () => {
     if (hum > Number(process.env.HUMIDITY_HIGH_SET_POINT)) {
       console.log('Humdity is high!!')
       status = 'Humdity is high!'
+
+      transporter.sendMail(mailOptions, function(err, info) {
+        if (err) console.log(err)
+        else console.log(info)
+      })
     } else if (hum < Number(process.env.HUMIDITY_LOW_SET_POINT)) {
       console.log('Humidity is low')
       status = 'Humdity is low!'

@@ -1,11 +1,10 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {getDevice} from '../store/devices'
-import {Link} from 'react-router-dom'
-// import UpdateCampus from './UpdateCampus';
-// import {socket} from '../socket'
 import socketIOClient from 'socket.io-client'
 import axios from 'axios'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
 
 class SingleDevice extends Component {
   constructor() {
@@ -119,7 +118,9 @@ class SingleDevice extends Component {
               %
             </label>
             <h3>{this.state.message}</h3>
-            <button type="submit">SET</button>
+            <Button variant="contained" type="submit">
+              SET
+            </Button>
           </form>
         </div>
       </React.Fragment>
