@@ -19,3 +19,41 @@ form div {
   margin: 1em;
   display: inline-block;
 }
+
+.navlink {
+  font-size: 1em;
+  padding: 5px;
+}
+
+.navlink:hover {
+  color: white;
+  background-color: purple;
+  border-radius: 5px;
+}
+
+#all-devices {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.device-container {
+  margin: 12px;
+  margin-bottom: 20px;
+  padding: 8px;
+  border: 1px black solid;
+  background-color: white;
+}
+
+.p-img {
+  width: 350px;
+  overflow: hidden;
+  height: auto;
+  border: 1px black solid;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}

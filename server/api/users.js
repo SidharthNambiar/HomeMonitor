@@ -21,8 +21,8 @@ router.put('/:id', async (req, res, next) => {
 
   try {
     const userID = req.user.id
-    const humidityHighPoint = Number(req.body.humidityHighPoint)
-    const humidityLowPoint = Number(req.body.humidityLowPoint)
+    const humidityHighPoint = Number(req.body.humidityHighPoint) || 10
+    const humidityLowPoint = Number(req.body.humidityLowPoint) || 20
 
     await User.update(
       {
