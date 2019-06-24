@@ -17,8 +17,6 @@ router.get('/', async (req, res, next) => {
 })
 
 router.put('/:id', async (req, res, next) => {
-  // console.log(process.env.HUMIDITY_LOW_SET_POINT )
-
   try {
     const userID = req.user.id
     const humidityHighPoint = Number(req.body.humidityHighPoint) || 10

@@ -19,34 +19,16 @@ var nodemailer = require('nodemailer')
 process.env.HUMIDITY_LOW_SET_POINT = 10
 process.env.HUMIDITY_HIGH_SET_POINT = 20
 
-// var transporter = nodemailer.createTransport({
-//   host: "smtp.mail.com",
-//   port: 587,
-//   secure: false,
-//   auth: {
-//     user: 'snambiar01@mail.com',
-//     pass: 'reallycool'
-//   }
-// });
-
 var transporter = nodemailer.createTransport({
-  host: 'smtp.mail.com',
+  service: 'gmail',
   auth: {
-    user: 'snambiar01@mail.com',
-    pass: 'reallycool'
+    user: 'user@gmail.com',
+    pass: 'password'
   }
 })
 
-// const mailOptions = {
-//   from: '"Home Monitor Alert" <snambiar01@mail.com>', // sender address
-//   to: "snambiar01@mail.com", // list of receivers
-//   subject: "Sensor Triggered", // Subject line
-//   text: "Hello World",
-//   html: "<b>Your sensor was triggered</b>"// plain text body
-// };
-
 var mailOptions = {
-  from: '"Home Alert System" <snambiar01@mail.com>',
+  from: '"Home Alert System" <snambiar01@gmail.com>',
   to: 'snambiar01@mail.com',
   subject: 'Alarm Triggered',
   html:
@@ -171,12 +153,7 @@ const startListening = () => {
     let name = 'Sid Nambiar'
     let status = ''
 
-    console.log(
-      process.env.HUMIDITY_LOW_SET_POINT,
-      process.env.HUMIDITY_HIGH_SET_POINT
-    )
     if (hum > Number(process.env.HUMIDITY_HIGH_SET_POINT)) {
-      console.log('Humdity is high!!')
       status = 'Humdity is high!'
 
       transporter.sendMail(mailOptions, function(err, info) {
@@ -184,11 +161,9 @@ const startListening = () => {
         else console.log(info)
       })
     } else if (hum < Number(process.env.HUMIDITY_LOW_SET_POINT)) {
-      console.log('Humidity is low')
       status = 'Humdity is low!'
     } else {
-      console.log('Humidty is fine')
-      status = 'Humdity is fine!'
+      status = 'GOOD'
     }
 
     let dataToSendToClient = [temp, hum, serialNum, status]
@@ -209,7 +184,6 @@ async function storeSensoreData(serialNumber, temperature, humidity, userId) {
       humidity,
       userId
     }
-    // console.log(sensorData)
 
     await Sensor.create(sensorData)
   } catch (err) {

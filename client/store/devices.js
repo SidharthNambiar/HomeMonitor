@@ -36,32 +36,18 @@ export const getAllDevices = () => async dispatch => {
 }
 
 export const getDevice = sn => async dispatch => {
-  // console.log("<><><><><IN HERE<><><><><><")
-  // console.log(sn)
   try {
     const res = await axios.get(`/api/devices/${sn}`)
-    console.log('IN GET DEVICE>>', res.data)
     dispatch(getSingleDevice(res.data))
   } catch (err) {
     console.error(err)
   }
 }
 
-// export const createNewProduct = product => async dispatch => {
-//   try {
-//     const {data} = axios.post('/api/devices', product)
-//     dispatch(createProduct(data))
-//   } catch (error) {
-//     console.error(error)
-//   }
-// }
-
 /**
  * REDUCER
  */
 export default function(state = initialState, action) {
-  console.log('state>>', state)
-  console.log('action>>', action)
   switch (action.type) {
     case GET_ALL_DEVICES:
       return {...state, devices: [...action.devices]}
