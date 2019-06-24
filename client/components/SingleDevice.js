@@ -5,6 +5,24 @@ import socketIOClient from 'socket.io-client'
 import axios from 'axios'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import {makeStyles} from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  },
+  dense: {
+    marginTop: theme.spacing(2)
+  },
+  menu: {
+    width: 200
+  }
+}))
 
 class SingleDevice extends Component {
   constructor() {
@@ -33,12 +51,6 @@ class SingleDevice extends Component {
     const socket = socketIOClient(endpoint)
     socket.on('temp-hum', data => this.setState({response: data}))
   }
-
-  // handleClick() {
-  //   return this.setState({
-  //     showUpdateForm: !this.state.showUpdateForm,
-  //   });
-  // }
 
   async updateSetPoints(userId, updatedSetPoints) {
     try {
@@ -80,20 +92,23 @@ class SingleDevice extends Component {
           ) : null}
           {response && response[2] === Number(serialNum) ? (
             <div>
-              <h2>The temperature is: {response[0]} °F</h2>
-              <h2>The humidity is: {response[1]} %</h2>
-              <h2> STATUS: {response[3]}</h2>
+              <h2>Current Temperature: {response[0]}°F</h2>
+              <h2>Current Humidity: {response[1]}%</h2>
+              <h2 className="status"> STATUS: {response[3]}</h2>
             </div>
           ) : (
             <p>Loading...</p>
           )}
 
           <form onSubmit={this.handleSubmit}>
-            <h3>Set Humidity</h3>
+            <h3>SETTINGS</h3>
+            <h4>Humidity</h4>
             <label>
-              Humidity (Low Point)
-              <input
+              <TextField
                 type="text"
+                label="Min(%)"
+                margin="normal"
+                variant="outlined"
                 name="humidityLowPoint"
                 onChange={this.handleChange}
                 value={
@@ -101,21 +116,22 @@ class SingleDevice extends Component {
                   this.props.user.humidityLowPoint
                 }
               />{' '}
-              %
             </label>
 
             <label>
-              Humidity (High Point)
-              <input
+              <TextField
                 type="text"
+                label="Max(%)"
+                margin="normal"
+                variant="outlined"
                 name="humidityHighPoint"
+                className="textField"
                 onChange={this.handleChange}
                 value={
                   this.state.humidityHighPoint ||
                   this.props.user.humidityHighPoint
                 }
               />{' '}
-              %
             </label>
             <h3>{this.state.message}</h3>
             <Button variant="contained" type="submit">
